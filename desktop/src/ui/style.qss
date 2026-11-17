@@ -1,35 +1,154 @@
-QSlider::grove:vertical {
-    background: #E0E0E0;
-    width: 8px;
-    border-radius: 4px;
+QWidget {
+    color: #e9eef3;
+    font-family: "Helvetica Neue", "Segoe UI", sans-serif;
+    font-size: 13px;
+}
+
+QWidget#AppSurface {
+    background: #101419;
+}
+
+QLabel {
+    background: transparent;
+}
+
+QLabel#Eyebrow {
+    color: #64dcc6;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+QLabel#Title {
+    color: #f4f7fa;
+    font-size: 32px;
+    font-weight: 600;
+}
+
+QLabel#Subtitle {
+    color: #94a1af;
+    font-size: 14px;
+}
+
+QFrame#ControlPanel {
+    background: #191f27;
+    border: 1px solid #2c3540;
+    border-radius: 16px;
+}
+
+QLabel#PanelTitle {
+    color: #dce4ed;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+QLabel#PanelMeta {
+    color: #8d9aa9;
+    font-size: 11px;
+}
+
+QFrame#Divider {
+    background: #2b3440;
+    border: none;
+}
+
+QWidget#EqualizerBand {
+    background: transparent;
+    border-radius: 8px;
+}
+
+QWidget#EqualizerBand:hover {
+    background: #202832;
+}
+
+QLabel#BandLabel {
+    color: #a4b1bf;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+QLabel#ValueLabel {
+    color: #86e7d4;
+    background: #222f34;
+    border: 1px solid #30454a;
+    border-radius: 7px;
+    font-family: "Menlo", "Consolas", monospace;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+QSlider {
+    background: transparent;
+}
+
+QSlider::groove:vertical {
+    background: #303b48;
+    width: 6px;
+    border-radius: 3px;
 }
 
 QSlider::sub-page:vertical {
-    background: #B0B0B0;
-    border-radius: 4px;
+    background: #303b48;
+    border-radius: 3px;
 }
 
 QSlider::add-page:vertical {
-    background: #3B82F6;
-    border-radius: 4px;
+    background: #56cdb7;
+    border-radius: 3px;
 }
 
 QSlider::handle:vertical {
-    background: #FFFFFF;
-    border: 2px solid #3B82F6;
+    background: #e4f7f2;
+    border: 1px solid #a0e3d5;
     height: 20px;
-    width: 20px;
-    margin: 0 -6px;
-    border-radius: 10px;
+    margin: 0 -9px;
+    border-radius: 5px;
 }
 
 QSlider::handle:vertical:hover {
-    background: #EFF6FF;
-    border-color: #2563EB;
+    background: #ffffff;
+    border-color: #64e5cc;
 }
 
 QSlider::handle:vertical:pressed {
-    background: #3B82F6;
-    border-color: #1D4ED8;
+    background: #64dcc6;
+    border-color: #64dcc6;
 }
 
+QSlider::handle:vertical:focus {
+    border: 2px solid #64dcc6;
+}
+
+QPushButton {
+    color: #dce5ed;
+    background: #222b35;
+    border: 1px solid #3a4654;
+    border-radius: 8px;
+    padding: 11px 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+QPushButton:hover {
+    background: #2c3944;
+    border-color: #68818a;
+}
+
+QPushButton:pressed {
+    background: #354954;
+}
+
+QPushButton:focus {
+    border-color: #64dcc6;
+}
+
+QLabel#Footer {
+    color: #7e8b99;
+    font-size: 11px;
+}
+
+QToolTip {
+    color: #e9eef3;
+    background: #28343f;
+    border: 1px solid #4b6470;
+    padding: 6px;
+}
