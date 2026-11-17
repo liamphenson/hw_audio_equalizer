@@ -1,0 +1,35 @@
+QSlider::grove:vertical {
+    background: #E0E0E0;
+    width: 8px;
+    border-radius: 4px;
+}
+
+QSlider::sub-page:vertical {
+    background: #B0B0B0;
+    border-radius: 4px;
+}
+
+QSlider::add-page:vertical {
+    background: #3B82F6;
+    border-radius: 4px;
+}
+
+QSlider::handle:vertical {
+    background: #FFFFFF;
+    border: 2px solid #3B82F6;
+    height: 20px;
+    width: 20px;
+    margin: 0 -6px;
+    border-radius: 10px;
+}
+
+QSlider::handle:vertical:hover {
+    background: #EFF6FF;
+    border-color: #2563EB;
+}
+
+QSlider::handle:vertical:pressed {
+    background: #3B82F6;
+    border-color: #1D4ED8;
+}
+
