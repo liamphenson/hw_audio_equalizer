@@ -92,16 +92,12 @@ class EqualizerBand(QWidget):
 
     def on_value_changed(self, value: int) -> None:
         attenuation = value / self.PRECISION
-        self.value_label.setText("{:.2f}".format(attenuation))
+        self.value_label.setText(f"{attenuation:.2f}")
         self._update_tooltip()
         self.attenuationChanged.emit(attenuation)
 
     def _update_tooltip(self) -> None:
-        self.slider.setToolTip(
-            "Band {} · {:.2f} attenuation".format(
-                self.band_label.text(), self.attenuation
-            )
-        )
+        self.slider.setToolTip(f"Band {self.band_label.text()} · {self.attenuation:.2f} attenuation")
 
 
 class MainWindow(QMainWindow):
@@ -161,7 +157,7 @@ class MainWindow(QMainWindow):
 
         self.bands = []
         for index in range(13):
-            band = EqualizerBand("{:02d}".format(index + 1))
+            band = EqualizerBand(f"{(index+1):.2f}")
             self.bands.append(band)
             controls.addWidget(band, 1)
         panel_layout.addLayout(controls, 1)
