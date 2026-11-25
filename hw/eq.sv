@@ -21,7 +21,7 @@
 
 
 module eq #(
-    parameter C_S_AXI_ADDR_WIDTH = 6, 
+    parameter C_S_AXI_ADDR_WIDTH = 9, 
     parameter C_S_AXI_DATA_WIDTH = 32, 
     parameter RAM_ADDR_WIDTH = 6, 
     parameter RAM_WIDTH = 16, 
@@ -59,6 +59,17 @@ module eq #(
         output logic SDI_DAC
     );
     
+    // FSM States
+    typedef enum logic [3:0] {INIT, WR_FILTER, WR_BUFFER, EN, SAMPLE, POLL_DATAPATH, POLL_SPI} Statetype;
+    Statetype state, nextState;
+
+    localparam [8:0] RESET_ADDR = 9'h000; // Write to Address 000 to reset the equalizer
+    localparam [8:0] EN_ADDR = 9'h004; // Write to address 004 to enable the equalizer
+    localparam [8:0] WR_FILTER_UPPER = 9'h010; // Set the upper bits of address to 0x01 to write to a filter. The lower order 4 bits determine the filter being written to.
+    localparam [8:0] WR_BUFFER_UPPER = 9'h020; // Set the upper bits of address to 0x02 to write to a buffer. Bit 0 then controls which buffer to write to (0 for left, 1 for right).
+    localparam [8:0] WR_ATTEN_ADDR = 9'h030; // Set the upper bits to 0x03 to write a new attenuation factor. The lower order 4 bits determine which band is having its attenuation factor updated.
+    localparam [8:0] UPPER_MASK = 9'h1F0; // Mask out the lower four bits of an address
+
     // Main Bus Signals
     logic wrMain, rdMain;
     logic [C_S_AXI_ADDR_WIDTH-1:0] wrAddrMain, rdAddrMain;
@@ -327,4 +338,5 @@ module eq #(
         .S_AXI_BVALID(AXI_BVALID_DAC),
         .S_AXI_BREADY(AXI_BREADY_DAC),
     );
+
 endmodule
