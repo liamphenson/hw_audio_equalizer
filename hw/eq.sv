@@ -20,7 +20,13 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 
-module eq #(parameter C_S_AXI_ADDR_WIDTH = 6, C_S_AXI_DATA_WIDTH = 32, RAM_ADDR_WIDTH = 6, RAM_WIDTH = 16, FILTER_TAPS = 279)(
+module eq #(
+    parameter C_S_AXI_ADDR_WIDTH = 6, 
+    parameter C_S_AXI_DATA_WIDTH = 32, 
+    parameter RAM_ADDR_WIDTH = 6, 
+    parameter RAM_WIDTH = 16, 
+    parameter FILTER_TAPS = 279
+) (
         // Axi4Lite Bus
         input logic S_AXI_ACLK,
         input  logic  S_AXI_ARESETN,
@@ -59,7 +65,10 @@ module eq #(parameter C_S_AXI_ADDR_WIDTH = 6, C_S_AXI_DATA_WIDTH = 32, RAM_ADDR_
     logic [C_S_AXI_DATA_WIDTH-1:0] wrDataMain, rdDataMain;
     
     // Main supporter for interfacing with MicroBlaze
-    Axi4LiteSupporter #(.C_S_AXI_ADDR_WIDTH(C_S_AXI_DATA_WIDTH), .C_S_AXI_DATA_WIDTH(C_S_AXI_DATA_WIDTH)) MainSupporter(
+    Axi4LiteSupporter #(
+        .C_S_AXI_ADDR_WIDTH(C_S_AXI_DATA_WIDTH), 
+        .C_S_AXI_DATA_WIDTH(C_S_AXI_DATA_WIDTH)
+    ) MainSupporter(
     // Simple Bus
     .wrAddr(wrAddrMain),
     .wrData(wrDataMain),
@@ -102,7 +111,10 @@ module eq #(parameter C_S_AXI_ADDR_WIDTH = 6, C_S_AXI_DATA_WIDTH = 32, RAM_ADDR_
     logic [C_S_AXI_DATA_WIDTH-1:0] AXI_WDATA_ADC, AXI_RDATA_ADC;
     
     // Manager for interfacing with ADC
-    Axi4LiteManager #(.C_M_AXI_ADDR_WIDTH(C_S_AXI_ADDR_WIDTH), .C_M_AXI_DATA_WIDTH(C_S_AXI_DATA_WIDTH)) ADCManager (
+    Axi4LiteManager #(
+        .C_M_AXI_ADDR_WIDTH(C_S_AXI_ADDR_WIDTH), 
+        .C_M_AXI_DATA_WIDTH(C_S_AXI_DATA_WIDTH)
+    ) ADCManager (
     // Simple Bus
     .wrAddr(wrAddrADC),
     .wrData(wrDataADC),
@@ -133,7 +145,10 @@ module eq #(parameter C_S_AXI_ADDR_WIDTH = 6, C_S_AXI_DATA_WIDTH = 32, RAM_ADDR_
     );
     
     // SPI controller for ADC
-    Axi4Lite_spi_controller #(.C_S_AXI_ADDR_WIDTH(C_S_AXI_ADDR_WIDTH), .C_S_AXI_DATA_WIDTH(C_S_AXI_DATA_WIDTH)) ADCController(
+    Axi4Lite_spi_controller #(
+        .C_S_AXI_ADDR_WIDTH(C_S_AXI_ADDR_WIDTH), 
+        .C_S_AXI_DATA_WIDTH(C_S_AXI_DATA_WIDTH)
+    ) ADCController(
     // Axi4Lite Bus
     .S_AXI_ACLK(S_AXI_ACLK),
     .S_AXI_ARESETN(S_AXI_ARESETN),
@@ -174,7 +189,10 @@ module eq #(parameter C_S_AXI_ADDR_WIDTH = 6, C_S_AXI_DATA_WIDTH = 32, RAM_ADDR_
     logic [C_S_AXI_DATA_WIDTH-1:0] AXI_WDATA_DAC, AXI_RDATA_DAC;
     
     // Manager for interfacing with DAC
-    Axi4LiteManager #(.C_M_AXI_ADDR_WIDTH(C_S_AXI_ADDR_WIDTH), .C_M_AXI_DATA_WIDTH(C_S_AXI_DATA_WIDTH)) DACManager (
+    Axi4LiteManager #(
+        .C_M_AXI_ADDR_WIDTH(C_S_AXI_ADDR_WIDTH), 
+        .C_M_AXI_DATA_WIDTH(C_S_AXI_DATA_WIDTH)
+    ) DACManager (
     // Simple Bus
     .wrAddr(wrAddrDAC),
     .wrData(wrDataDAC),
@@ -205,7 +223,10 @@ module eq #(parameter C_S_AXI_ADDR_WIDTH = 6, C_S_AXI_DATA_WIDTH = 32, RAM_ADDR_
     );
     
     // SPI controller for DAC
-    Axi4Lite_spi_controller #(.C_S_AXI_ADDR_WIDTH(C_S_AXI_ADDR_WIDTH), .C_S_AXI_DATA_WIDTH(C_S_AXI_DATA_WIDTH)) DACController(
+    Axi4Lite_spi_controller #(
+        .C_S_AXI_ADDR_WIDTH(C_S_AXI_ADDR_WIDTH), 
+        .C_S_AXI_DATA_WIDTH(C_S_AXI_DATA_WIDTH)
+    ) DACController(
     // Axi4Lite Bus
     .S_AXI_ACLK(S_AXI_ACLK),
     .S_AXI_ARESETN(S_AXI_ARESETN),
@@ -246,7 +267,10 @@ module eq #(parameter C_S_AXI_ADDR_WIDTH = 6, C_S_AXI_DATA_WIDTH = 32, RAM_ADDR_
     logic [C_S_AXI_DATA_WIDTH-1:0] AXI_WDATA_DSP, AXI_RDATA_DSP;
     
     // Manager for interfacing with DSP datapath
-    Axi4LiteManager #(.C_M_AXI_ADDR_WIDTH(C_S_AXI_ADDR_WIDTH), .C_M_AXI_DATA_WIDTH(C_S_AXI_DATA_WIDTH)) DSPManager (
+    Axi4LiteManager #(
+        .C_M_AXI_ADDR_WIDTH(C_S_AXI_ADDR_WIDTH), 
+        .C_M_AXI_DATA_WIDTH(C_S_AXI_DATA_WIDTH)
+    ) DSPManager (
     // Simple Bus
     .wrAddr(wrAddrDSP),
     .wrData(wrDataDSP),
@@ -277,5 +301,30 @@ module eq #(parameter C_S_AXI_ADDR_WIDTH = 6, C_S_AXI_DATA_WIDTH = 32, RAM_ADDR_
     );
 
     // DSP Datapath
-    
+    Axi4Lite_dsp_datapath #(
+        .C_S_AXI_ADDR_WIDTH(C_S_AXI_ADDR_WIDTH),
+        .C_S_AXI_DATA_WIDTH(C_S_AXI_DATA_WIDTH),
+        .WORD_SIZE(RAM_WIDTH),
+        .FILTER_SIZE(FILTER_TAPS)
+    ) datapath1 (
+        .S_AXI_ACLK(S_AXI_ACLK),
+        .S_AXI_ARESETN(S_AXI_ARESETN),
+        .S_AXI_AWADDR(AXI_AWADDR_DAC),
+        .S_AXI_AWVALID(AXI_AWVALID_DAC),
+        .S_AXI_AWREADY(AXI_AWREADY_DAC),
+        .S_AXI_WDATA(AXI_WDATA_DAC),
+        .S_AXI_WSTRB(AXI_WSTRB_DAC),
+        .S_AXI_WVALID(AXI_WVALID_DAC),
+        .S_AXI_WREADY(AXI_WREADY_DAC),
+        .S_AXI_ARADDR(AXI_ARADDR_DAC),
+        .S_AXI_ARVALID(AXI_ARVALID_DAC),
+        .S_AXI_ARREADY(AXI_ARREADY_DAC),
+        .S_AXI_RDATA(AXI_RDATA_DAC),
+        .S_AXI_RRESP(AXI_RRESP_DAC),
+        .S_AXI_RVALID(AXI_RVALID_DAC),
+        .S_AXI_RREADY(AXI_RREADY_DAC),
+        .S_AXI_BRESP(AXI_BRESP_DAC),
+        .S_AXI_BVALID(AXI_BVALID_DAC),
+        .S_AXI_BREADY(AXI_BREADY_DAC),
+    );
 endmodule
