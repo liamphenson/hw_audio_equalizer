@@ -232,5 +232,50 @@ module eq #(parameter C_S_AXI_ADDR_WIDTH = 6, C_S_AXI_DATA_WIDTH = 32, RAM_ADDR_
     .CONV(CONV_DAC),
     .SDI(SDI_DAC)
     );
+
+    // DSP Bus Signals
+    logic wrDSP, rdDSP;
+    logic [C_S_AXI_ADDR_WIDTH-1:0] wrAddrDSP, rdAddrDSP;
+    logic [C_S_AXI_DATA_WIDTH-1:0] wrDataDSP, rdDataDSP;
+
+    // DSP Axi4Lite Bus Signals
+    logic AXI_AWVALID_DSP, AXI_AWREADY_DSP, AXI_WVALID_DSP, AXI_WREADY_DSP, AXI_ARVALID_DSP, AXI_ARREADY_DSP, AXI_RVALID_DSP, AXI_RREADY_DSP, AXI_BVALID_DSP, AXI_BREADY_DSP;
+    logic [1:0] AXI_RRESP_DSP, AXI_BRESP_DSP;
+    logic [3:0] AXI_WSTRB_DSP;
+    logic [C_S_AXI_ADDR_WIDTH-1:0] AXI_AWADDR_DSP, AXI_ARADDR_DSP;
+    logic [C_S_AXI_DATA_WIDTH-1:0] AXI_WDATA_DSP, AXI_RDATA_DSP;
+    
+    // Manager for interfacing with DSP datapath
+    Axi4LiteManager #(.C_M_AXI_ADDR_WIDTH(C_S_AXI_ADDR_WIDTH), .C_M_AXI_DATA_WIDTH(C_S_AXI_DATA_WIDTH)) DSPManager (
+    // Simple Bus
+    .wrAddr(wrAddrDSP),
+    .wrData(wrDataDSP),
+    .wr(wrDSP),
+    .rdAddr(rdAddrDSP),
+    .rdData(rdDataDSP),
+    .rd(rdDSP),
+    // Axi4Lite Bus
+    .M_AXI_ACLK(S_AXI_ACLK),
+    .M_AXI_ARESETN(S_AXI_ARESETN),
+    .M_AXI_AWADDR(AXI_AWADDR_DSP),
+    .M_AXI_AWVALID(AXI_AWVALID_DSP),
+    .M_AXI_AWREADY(AXI_AWREADY_DSP),
+    .M_AXI_WDATA(AXI_WDATA_DSP),
+    .M_AXI_WSTRB(AXI_WSTRB_DSP),
+    .M_AXI_WVALID(AXI_WVALID_DSP),
+    .M_AXI_WREADY(AXI_WREADY_DSP),
+    .M_AXI_ARADDR(AXI_ARADDR_DSP),
+    .M_AXI_ARVALID(AXI_ARVALID_DSP),
+    .M_AXI_ARREADY(AXI_ARREADY_DSP),
+    .M_AXI_RDATA(AXI_RDATA_DSP),
+    .M_AXI_RRESP(AXI_RRESP_DSP),
+    .M_AXI_RVALID(AXI_RVALID_DSP),
+    .M_AXI_RREADY(AXI_RREADY_DSP),
+    .M_AXI_BRESP(AXI_BRESP_DSP),
+    .M_AXI_BVALID(AXI_BVALID_DSP),
+    .M_AXI_BREADY(AXI_BREADY_DSP)
+    );
+
+    // DSP Datapath
     
 endmodule
