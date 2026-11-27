@@ -60,15 +60,27 @@ module eq #(
     );
     
     // FSM States
-    typedef enum logic [3:0] {INIT, WR_FILTER, WR_BUFFER, EN, SAMPLE, POLL_DATAPATH, POLL_SPI} Statetype;
+    typedef enum logic [3:0] {RESET, INIT, WR_FILTER, WR_BUFFER, EN, SAMPLE, POLL_DATAPATH, POLL_SPI} Statetype;
     Statetype state, nextState;
 
+    // Address map
     localparam [8:0] RESET_ADDR = 9'h000; // Write to Address 000 to reset the equalizer
-    localparam [8:0] EN_ADDR = 9'h004; // Write to address 004 to enable the equalizer
-    localparam [8:0] WR_FILTER_UPPER = 9'h010; // Set the upper bits of address to 0x01 to write to a filter. The lower order 4 bits determine the filter being written to.
-    localparam [8:0] WR_BUFFER_UPPER = 9'h020; // Set the upper bits of address to 0x02 to write to a buffer. Bit 0 then controls which buffer to write to (0 for left, 1 for right).
-    localparam [8:0] WR_ATTEN_ADDR = 9'h030; // Set the upper bits to 0x03 to write a new attenuation factor. The lower order 4 bits determine which band is having its attenuation factor updated.
-    localparam [8:0] UPPER_MASK = 9'h1F0; // Mask out the lower four bits of an address
+    localparam [8:0] DSP_CONVOLUTION_ADDR = 9'h001; // Address for convolution using the left channel
+    localparam [8:0] DSP_CONVOLUTION_ADDR_RIGHT = 9'h002; // Address for convolution using the right channel
+    loclaparam [8:0] DSP_CHANNEL_SEL_ADDR = 9'h003; // Address for selecting the channel to write buffer values to
+    localparam [8:0] DSP_BUFFER_WRITE_ADDR = 9'h004; // Address for writing buffer coefficients to the left channel
+    localparam [8:0] DSP_BUFFER_WRITE_ADDR_RIGHT = 9'h005; // Address for writing buffer coefficients to the right channel
+    localparam [8:0] DSP_FILTER_SEL_ADDR = 9'h006; // Address for selecting the band to write coefficients/attenuation factors to
+    localparam [8:0] ENABLE_ADDR = 9'h007; // Enable address for the equalizer
+    localparam [8:0] DSP_FILTER_WRITE_ADDR = 9'h010; // Address for writing filter coefficients to the DSP datapath
+    localparam [8:0] DSP_ATTEN_FACTOR_WRITE_ADDR = 9'h020; // Address for writing attenuation factors to the DSP datapath
+    localparam [8:0] SPI_CONV_CYCLES_CONFIG_ADDR = 9'h030; // Address for writing the number of CONV cycles to the SPI controllers
+    localparam [8:0] SPI_DATA_WIDTH_WR_UPPER = 9'h040; // Upper bits of address for configuring the data width for SPI controllers (set bit 0 to 0 for ADC and 1 for DAC)
+    localparam [8:0] UPPER_MASK = 9'h1F0; // Mask for extracting upper 5 bits of address
+    localparam [31:0] DSP_NOT_DONE_SIGNAL = 32'h00010000; // Shared not done signal across all peripherals
+
+    // Internal signals
+    logic reset, CH_right;
 
     // Main Bus Signals
     logic wrMain, rdMain;
@@ -110,7 +122,7 @@ module eq #(
     );
     
     // ADC Bus Signals
-    logic wrADC, rdADC;
+    logic wrADC, rdADC, wrDoneADC, rdDoneADC;
     logic [C_S_AXI_ADDR_WIDTH-1:0] wrAddrADC, rdAddrADC;
     logic [C_S_AXI_DATA_WIDTH-1:0] wrDataADC, rdDataADC;
     
@@ -130,9 +142,11 @@ module eq #(
     .wrAddr(wrAddrADC),
     .wrData(wrDataADC),
     .wr(wrADC),
+    .wrDone(wrDoneADC),
     .rdAddr(rdAddrADC),
     .rdData(rdDataADC),
     .rd(rdADC),
+    .rdDone(rdDoneADC),
     // Axi4Lite Bus
     .M_AXI_ACLK(S_AXI_ACLK),
     .M_AXI_ARESETN(S_AXI_ARESETN),
@@ -188,7 +202,7 @@ module eq #(
     );
     
     // DAC Bus Signals
-    logic wrDAC, rdDAC;
+    logic wrDAC, rdDAC, wrDoneDAC, rdDoneDAC;
     logic [C_S_AXI_ADDR_WIDTH-1:0] wrAddrDAC, rdAddrDAC;
     logic [C_S_AXI_DATA_WIDTH-1:0] wrDataDAC, rdDataDAC;
     
@@ -208,9 +222,11 @@ module eq #(
     .wrAddr(wrAddrDAC),
     .wrData(wrDataDAC),
     .wr(wrDAC),
+    .wrDone(wrDoneDAC),
     .rdAddr(rdAddrDAC),
     .rdData(rdDataDAC),
     .rd(rdDAC),
+    .rdDone(rdDoneDAC),
     // Axi4Lite Bus
     .M_AXI_ACLK(S_AXI_ACLK),
     .M_AXI_ARESETN(S_AXI_ARESETN),
@@ -266,7 +282,7 @@ module eq #(
     );
 
     // DSP Bus Signals
-    logic wrDSP, rdDSP;
+    logic wrDSP, rdDSP, wrDoneDSP, rdDoneDSP;
     logic [C_S_AXI_ADDR_WIDTH-1:0] wrAddrDSP, rdAddrDSP;
     logic [C_S_AXI_DATA_WIDTH-1:0] wrDataDSP, rdDataDSP;
 
@@ -286,9 +302,11 @@ module eq #(
     .wrAddr(wrAddrDSP),
     .wrData(wrDataDSP),
     .wr(wrDSP),
+    .wrDone(wrDoneDSP),
     .rdAddr(rdAddrDSP),
     .rdData(rdDataDSP),
     .rd(rdDSP),
+    .rdDone(rdDoneDSP),
     // Axi4Lite Bus
     .M_AXI_ACLK(S_AXI_ACLK),
     .M_AXI_ARESETN(S_AXI_ARESETN),
@@ -338,5 +356,54 @@ module eq #(
         .S_AXI_BVALID(AXI_BVALID_DAC),
         .S_AXI_BREADY(AXI_BREADY_DAC),
     );
+
+    // Simple combinational logic
+    assign reset = S_AXI_ARESETN || (wrMain && wrAddrMain == RESET_ADDR);
+
+    // Sequential Logic
+    always_ff @(posedge clk) begin
+        if(reset) begin
+            state <= RESET;
+        end
+        else begin
+            state <= nextState;
+        end
+    end
+
+    // FSM logic
+    always_comb begin
+        nextState = state;
+        case(state)
+            RESET: begin
+                wrDSPAddr = 9'h000;
+                wrDSP = 1;
+                if (wrDone) nextState = INIT;
+            end
+            INIT: begin
+                
+            end
+            WR_FILTER: begin
+                
+            end
+            WR_BUFFER: begin
+                
+            end
+            EN: begin
+                
+            end
+            SAMPLE: begin
+                
+            end
+            POLL_DSP: begin
+                
+            end
+            POLL_SPI: begin
+                
+            end
+            default: begin
+                nextState = RESET;
+            end
+        endcase
+    end 
 
 endmodule
